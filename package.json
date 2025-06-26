@@ -1,0 +1,42 @@
+{
+  "name": "autogen-js-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "for f in $(find . -type f -name '*.js'); do echo \"[TEST] $f\"; node $f || exit 1; done"
+  },
+  "dependencies": {
+    "babel-cli": "*",
+    "bcrypt": "*",
+    "body-parser": "*",
+    "chai": "*",
+    "cors": "*",
+    "dotenv": "*",
+    "ejs": "*",
+    "eslint": "*",
+    "express": "*",
+    "hapi": "*",
+    "jest": "*",
+    "jsonwebtoken": "*",
+    "koa": "*",
+    "lodash": "*",
+    "mocha": "*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "morgan": "*",
+    "multer": "*",
+    "mysql2": "*",
+    "nodemon": "*",
+    "passport": "*",
+    "pg": "*",
+    "prettier": "*",
+    "pug": "*",
+    "redis": "*",
+    "sequelize": "*",
+    "sqlite3": "*",
+    "supertest": "*",
+    "ts-node": "*",
+    "typescript": "*"
+  }
+}

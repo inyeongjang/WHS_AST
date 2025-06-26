@@ -1,0 +1,61 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [main, master, WHS_VULN_DETEC]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm install
+      - name: Build (if present)
+        run: npm run build --if-present
+      - name: Lint (ignore error)
+        run: npm run lint || true
+
+      - name: Test each JS file (excluding node_modules)
+        run: |
+          set +e
+          LOG_ALL="test_results.log"
+          LOG_FAIL="test_failed.log"
+          > $LOG_ALL
+          > $LOG_FAIL
+          # node_modules 제외하고 .js 순회
+          for f in $(find . -type f -name '*.js' -not -path "./node_modules/*"); do
+            echo "===== TEST $f =====" | tee -a $LOG_ALL
+            OUT=$(node "$f" 2>&1)
+            CODE=$?
+            echo "$OUT" >> $LOG_ALL
+            if [ $CODE -ne 0 ]; then
+              echo "[❌ FAIL] $f" | tee -a $LOG_FAIL
+              echo "에러 로그:" >> $LOG_FAIL
+              echo "$OUT" >> $LOG_FAIL
+              echo "" >> $LOG_FAIL
+            else
+              echo "[✅ PASS] $f" | tee -a $LOG_ALL
+            fi
+          done
+          echo "테스트 완료." | tee -a $LOG_ALL
+          exit 0
+        continue-on-error: true
+
+      - name: Upload test logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: |
+            test_results.log
+            test_failed.log
